@@ -1,0 +1,21 @@
+import { DeepPartial, ObjectLiteral, Repository } from 'typeorm';
+
+export class BasicService<Entity extends ObjectLiteral> {
+  constructor(protected repository: Repository<Entity>) {}
+
+  find(...args: Parameters<Repository<Entity>['find']>) {
+    return this.repository.find(...args);
+  }
+  findOne(...args: Parameters<Repository<Entity>['findOne']>) {
+    return this.repository.findOne(...args);
+  }
+  findOneBy(...args: Parameters<Repository<Entity>['findOneBy']>) {
+    return this.repository.findOneBy(...args);
+  }
+  create(data: DeepPartial<Entity>[]) {
+    return this.repository.save(this.repository.create(data));
+  }
+  update(...args: Parameters<Repository<Entity>['update']>) {
+    return this.repository.update(...args);
+  }
+}

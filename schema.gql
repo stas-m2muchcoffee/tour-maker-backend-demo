@@ -1,0 +1,25 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Query {
+  user: UserQuery!
+}
+
+"""User"""
+type User {
+  email: String!
+  id: ID!
+  role: UserRole!
+  token: String
+}
+
+type UserQuery {
+  """self instance"""
+  getMe: User!
+}
+
+"""User role"""
+enum UserRole {
+  User
+}
