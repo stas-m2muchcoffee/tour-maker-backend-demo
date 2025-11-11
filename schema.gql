@@ -2,8 +2,33 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type AuthMutation {
+  """Logs out the current user"""
+  logOut: Boolean!
+
+  """Authenticates an existing user"""
+  signIn(input: SignInInput!): User!
+
+  """Registers a new user"""
+  signUp(input: SignUpInput!): User!
+}
+
+type Mutation {
+  auth: AuthMutation!
+}
+
 type Query {
   user: UserQuery!
+}
+
+input SignInInput {
+  email: String!
+  password: String!
+}
+
+input SignUpInput {
+  email: String!
+  password: String!
 }
 
 """User"""

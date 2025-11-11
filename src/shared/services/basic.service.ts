@@ -12,7 +12,10 @@ export class BasicService<Entity extends ObjectLiteral> {
   findOneBy(...args: Parameters<Repository<Entity>['findOneBy']>) {
     return this.repository.findOneBy(...args);
   }
-  create(data: DeepPartial<Entity>[]) {
+  save(data: Entity) {
+    return this.repository.save(data);
+  }
+  create(data: DeepPartial<Entity>) {
     return this.repository.save(this.repository.create(data));
   }
   update(...args: Parameters<Repository<Entity>['update']>) {

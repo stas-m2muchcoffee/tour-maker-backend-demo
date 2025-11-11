@@ -24,7 +24,7 @@ export class User extends BasicEntity {
   })
   role: UserRole;
 
-  @Field({ nullable: true })
-  @Column({ nullable: true })
-  readonly token?: string;
+  @Field(() => String, { nullable: true })
+  @Column({ type: 'varchar', nullable: true })
+  token: string | null;
 }
