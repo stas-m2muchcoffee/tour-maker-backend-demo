@@ -13,6 +13,24 @@ type AuthMutation {
   signUp(input: SignUpInput!): User!
 }
 
+"""Category"""
+type Category {
+  id: ID!
+  name: String!
+}
+
+"""City"""
+type City {
+  id: ID!
+  name: String!
+}
+
+"""Location coordinates"""
+type Location {
+  latitude: Float!
+  longitude: Float!
+}
+
 type Mutation {
   auth: AuthMutation!
 }
@@ -29,6 +47,14 @@ input SignInInput {
 input SignUpInput {
   email: String!
   password: String!
+}
+
+"""Tour Stop"""
+type TourStop {
+  description: String!
+  id: ID!
+  location: Location!
+  name: String!
 }
 
 """User"""
