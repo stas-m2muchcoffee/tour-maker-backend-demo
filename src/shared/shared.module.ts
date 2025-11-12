@@ -1,4 +1,5 @@
 import { Global, Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
 
 import { UserModule } from '../user/user.module';
 import { RoleGuard } from './guards/role.guard';
@@ -10,8 +11,10 @@ import { CategoryModule } from '../category/category.module';
 import { TourModule } from '../tour/tour.module';
 import { TourStopModule } from '../tour-stop/tour-stop.module';
 import { CityModule } from '../city/city.module';
+import { OverpassService } from './services/overpass.service';
 
 const modules = [
+  HttpModule,
   AuthModule,
   UserModule,
   CityModule,
@@ -20,7 +23,7 @@ const modules = [
   TourStopModule,
 ];
 
-const services = [];
+const services = [OverpassService];
 
 const guards = [RoleGuard];
 

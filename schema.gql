@@ -23,6 +23,7 @@ type Category {
 type City {
   id: ID!
   name: String!
+  overpassId: String!
 }
 
 """Location coordinates"""

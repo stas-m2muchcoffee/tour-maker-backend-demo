@@ -24,3 +24,10 @@ export interface AppClsStore extends ClsStore {
 export interface GenerateGroupInterface {
   generateGroups(): string[];
 }
+
+export type OverpassPoi = {
+  id: string;
+  lon: number;
+  lat: number;
+  [key: string]: any;
+};

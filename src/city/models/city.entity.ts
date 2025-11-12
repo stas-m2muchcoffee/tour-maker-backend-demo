@@ -11,5 +11,12 @@ export class City extends BasicEntity {
 
   @Field()
   @Column()
-  name: string;
+  readonly name: string;
+
+  @Field()
+  @Column()
+  readonly countryName: string;
+
+  @Column()
+  readonly overpassId: string;
 }
