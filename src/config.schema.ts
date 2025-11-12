@@ -15,6 +15,8 @@ const PARAMS = {
   POSTGRES_DB: Joi.string().required(),
   POSTGRES_USER: Joi.string(),
   POSTGRES_PASSWORD: Joi.string(),
+
+  OPENROUTE_SERVICE_API_KEY: Joi.string().required(),
 };
 
 export const configSchema = Joi.object<typeof PARAMS>(PARAMS);

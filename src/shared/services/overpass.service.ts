@@ -40,8 +40,9 @@ export class OverpassService {
     }
 
     const overpassPois = uniqBy<OverpassPoi>(response.data?.elements, 'id');
-    const clearedOverpassPois = map(overpassPois, (poi) =>
-      pick(poi, ['id', 'lon', 'lat', 'tags.name']),
+    const clearedOverpassPois = map(
+      overpassPois,
+      (poi) => pick(poi, ['id', 'lon', 'lat', 'tags.name']) as OverpassPoi,
     );
     return clearedOverpassPois;
   }
@@ -51,7 +52,7 @@ export class OverpassService {
     city: City,
     limit: number,
   ): string {
-    const query = `
+    return `
       [out:json][timeout:60];
       area(id:${city.overpassId})->.searchArea;
       (
@@ -71,9 +72,5 @@ export class OverpassService {
       );
       out center ${limit};
     `;
-
-    console.log('QUERY', query);
-
-    return query;
   }
 }

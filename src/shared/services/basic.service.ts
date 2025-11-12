@@ -1,4 +1,9 @@
-import { DeepPartial, ObjectLiteral, Repository } from 'typeorm';
+import {
+  DeepPartial,
+  FindOptionsWhere,
+  ObjectLiteral,
+  Repository,
+} from 'typeorm';
 
 export class BasicService<Entity extends ObjectLiteral> {
   constructor(protected repository: Repository<Entity>) {}
@@ -11,6 +16,9 @@ export class BasicService<Entity extends ObjectLiteral> {
   }
   findOneBy(...args: Parameters<Repository<Entity>['findOneBy']>) {
     return this.repository.findOneBy(...args);
+  }
+  findBy(where: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[]) {
+    return this.repository.findBy(where);
   }
   save(data: Entity) {
     return this.repository.save(data);

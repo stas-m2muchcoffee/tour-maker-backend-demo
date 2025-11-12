@@ -21,10 +21,20 @@ type Category {
 
 """City"""
 type City {
+  countryName: String!
   id: ID!
   name: String!
-  overpassId: String!
 }
+
+input CreateTourInput {
+  categoryIds: [ID!]!
+  cityId: ID!
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
 
 """Location coordinates"""
 type Location {
@@ -34,6 +44,7 @@ type Location {
 
 type Mutation {
   auth: AuthMutation!
+  tour: TourMutation!
 }
 
 type Query {
@@ -50,9 +61,26 @@ input SignUpInput {
   password: String!
 }
 
+"""Tour"""
+type Tour {
+  categories: [Category!]!
+  city: City!
+  description: String!
+  id: ID!
+  route: JSON!
+  title: String!
+  tourStops: [TourStop!]
+  user: User!
+}
+
+type TourMutation {
+  """Creates a new tour"""
+  createTour(input: CreateTourInput!): Tour!
+}
+
 """Tour Stop"""
 type TourStop {
-  description: String!
+  description: String
   id: ID!
   location: Location!
   name: String!

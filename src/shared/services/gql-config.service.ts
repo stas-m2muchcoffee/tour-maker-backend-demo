@@ -8,6 +8,7 @@ import {
 } from '@apollo/server/plugin/landingPage/default';
 import { Context } from 'graphql-ws';
 import { Request } from 'express';
+import GraphQLJSON from 'graphql-type-json';
 import { Environment } from '../enums/environment.enum';
 import { UserService } from '../../user/user.service';
 import { WsContextWithUser } from '../../../types/types';
@@ -26,6 +27,7 @@ export class GqlConfigService implements GqlOptionsFactory {
       introspection: true,
       installSubscriptionHandlers: true,
       sortSchema: true,
+      resolvers: { JSON: GraphQLJSON },
       fieldResolverEnhancers: ['guards', 'interceptors', 'filters'],
       plugins: [
         this.config.get('ENVIRONMENT') !== Environment.Prod

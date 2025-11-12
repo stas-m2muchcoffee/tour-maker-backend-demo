@@ -1,0 +1,27 @@
+import { Args, Mutation, ResolveField, Resolver } from '@nestjs/graphql';
+
+import { TourMutation } from './models/tour.mutation.model';
+import { CreateTourInput } from './dto/create-tour.input';
+import { User } from '../user/models/user.entity';
+import { ActiveUser } from '../shared/decorators/active-user.decorator';
+import { TourService } from './tour.service';
+import { Roles } from '../shared/decorators/roles.decorator';
+import { Tour } from './models/tour.entity';
+
+@Resolver(() => TourMutation)
+export class TourMutationResolver {
+  constructor(private readonly tourService: TourService) {}
+
+  @Mutation(() => TourMutation)
+  tour() {
+    return {};
+  }
+
+  @ResolveField(() => Tour, {
+    description: 'Creates a new tour',
+  })
+  @Roles()
+  createTour(@Args('input') input: CreateTourInput, @ActiveUser() user: User) {
+    return this.tourService.createTour(input, user);
+  }
+}
