@@ -6,6 +6,7 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
+  RelationId,
   type Relation,
 } from 'typeorm';
 import type { UUID } from 'crypto';
@@ -24,33 +25,44 @@ export class Tour extends BasicEntity {
 
   @Field()
   @Column()
-  title: string;
+  readonly title: string;
 
   @Field()
   @Column({ type: 'text' })
-  description: string;
+  readonly description: string;
 
   @Field(() => GraphQLJSON)
   @Column({ type: 'json' })
-  route: Record<string, any>;
+  readonly route: Record<string, any>;
 
   @Field(() => [TourStop], { nullable: true })
   @OneToMany(() => TourStop, (tourStop) => tourStop.tour, {
     cascade: true,
     lazy: true,
   })
-  tourStops?: Relation<TourStop[]>;
+  readonly tourStops?: Relation<TourStop[]>;
 
   @Field(() => City)
   @ManyToOne(() => City, { lazy: true })
-  city: Relation<City>;
+  readonly city: Relation<City>;
+
+  @Field(() => ID)
+  @RelationId('city')
+  readonly cityId: UUID;
 
   @Field(() => [Category])
   @ManyToMany(() => Category, { lazy: true })
   @JoinTable()
-  categories: Relation<Category[]>;
+  readonly categories: Relation<Category[]>;
 
-  @Field(() => User)
+  @Field(() => [ID])
+  @RelationId('categories')
+  readonly categoryIds: UUID[];
+
   @ManyToOne(() => User, { lazy: true, onDelete: 'CASCADE' })
-  user: Relation<User>;
+  readonly user: Relation<User>;
+
+  @Field(() => ID)
+  @RelationId('user')
+  readonly userId: UUID;
 }

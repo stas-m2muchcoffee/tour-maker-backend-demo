@@ -20,6 +20,9 @@ export class BasicService<Entity extends ObjectLiteral> {
   findBy(where: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[]) {
     return this.repository.findBy(where);
   }
+  findAndCount(...args: Parameters<Repository<Entity>['findAndCount']>) {
+    return this.repository.findAndCount(...args);
+  }
   save(data: Entity) {
     return this.repository.save(data);
   }

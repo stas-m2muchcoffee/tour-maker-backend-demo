@@ -31,6 +31,14 @@ input CreateTourInput {
   cityId: ID!
 }
 
+input GetTourInput {
+  id: ID!
+}
+
+input GetToursFilterInput {
+  userId: ID
+}
+
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
@@ -47,7 +55,13 @@ type Mutation {
   tour: TourMutation!
 }
 
+input PagingInput {
+  limit: Int = 20
+  page: Int = 1
+}
+
 type Query {
+  tour: TourQuery!
   user: UserQuery!
 }
 
@@ -64,18 +78,36 @@ input SignUpInput {
 """Tour"""
 type Tour {
   categories: [Category!]!
+  categoryIds: [ID!]!
   city: City!
+  cityId: ID!
   description: String!
   id: ID!
   route: JSON!
   title: String!
   tourStops: [TourStop!]
-  user: User!
+  userId: ID!
 }
 
 type TourMutation {
   """Creates a new tour"""
   createTour(input: CreateTourInput!): Tour!
+}
+
+"""Tour paging result"""
+type TourPagingResult {
+  limit: Float
+  page: Float
+  results: [Tour!]!
+  total: Float
+}
+
+type TourQuery {
+  """Get a tour by id for the current user"""
+  getTour(input: GetTourInput!): Tour!
+
+  """Get tours by filter and paging"""
+  getTours(filter: GetToursFilterInput, paging: PagingInput): TourPagingResult!
 }
 
 """Tour Stop"""
@@ -84,6 +116,7 @@ type TourStop {
   id: ID!
   location: Location!
   name: String!
+  tourId: ID!
 }
 
 """User"""

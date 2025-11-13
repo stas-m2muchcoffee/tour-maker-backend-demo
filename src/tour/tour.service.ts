@@ -15,6 +15,10 @@ import { OverpassService } from '../shared/services/overpass.service';
 import { GeminiService } from '../shared/services/gemini.service';
 import { OverpassPoi } from '../../types/types';
 import { GEMINI_DATA } from '../shared/constants/gemini-data';
+import { GetTourInput } from './dto/get-tour.input';
+import { GetToursFilterInput } from './dto/get-tours-filter.input';
+import { PagingInput } from '../shared/inputs/paging.input';
+import { getPagingQuery } from '../shared/utils/get-paging-query';
 
 @Injectable()
 export class TourService extends BasicService<Tour> {
@@ -110,5 +114,23 @@ export class TourService extends BasicService<Tour> {
         },
       })),
     });
+  }
+
+  async getTours(filter?: GetToursFilterInput, paging?: PagingInput) {
+    const { skip, take } = getPagingQuery(paging);
+    const [results, total] = await this.findAndCount({
+      ...(filter?.userId ? { where: { user: { id: filter.userId } } } : {}),
+      skip,
+      take,
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+
+    return { results, total, ...paging };
+  }
+
+  getTour(input: GetTourInput) {
+    return this.findOneBy(input);
   }
 }
