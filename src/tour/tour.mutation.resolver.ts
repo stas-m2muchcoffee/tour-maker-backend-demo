@@ -6,7 +6,6 @@ import { User } from '../user/models/user.entity';
 import { ActiveUser } from '../shared/decorators/active-user.decorator';
 import { TourService } from './tour.service';
 import { Roles } from '../shared/decorators/roles.decorator';
-import { Tour } from './models/tour.entity';
 
 @Resolver(() => TourMutation)
 export class TourMutationResolver {
@@ -17,11 +16,13 @@ export class TourMutationResolver {
     return {};
   }
 
-  @ResolveField(() => Tour, {
-    description: 'Creates a new tour',
+  @ResolveField(() => Boolean, {
+    description:
+      'Start a new tour creation process. Returns true once the job is started.',
   })
   @Roles()
   createTour(@Args('input') input: CreateTourInput, @ActiveUser() user: User) {
-    return this.tourService.createTour(input, user);
+    void this.tourService.createTourInBackground(input, user);
+    return true;
   }
 }

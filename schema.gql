@@ -75,6 +75,10 @@ input SignUpInput {
   password: String!
 }
 
+type Subscription {
+  tourCreated: TourCreatedPayload!
+}
+
 """Tour"""
 type Tour {
   categories: [Category!]!
@@ -85,13 +89,21 @@ type Tour {
   id: ID!
   route: JSON!
   title: String!
+  tourStopIds: [ID!]!
   tourStops: [TourStop!]
   userId: ID!
 }
 
+type TourCreatedPayload {
+  error: String
+  tour: Tour
+}
+
 type TourMutation {
-  """Creates a new tour"""
-  createTour(input: CreateTourInput!): Tour!
+  """
+  Start a new tour creation process. Returns true once the job is started.
+  """
+  createTour(input: CreateTourInput!): Boolean!
 }
 
 """Tour paging result"""

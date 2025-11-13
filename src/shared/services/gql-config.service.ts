@@ -12,12 +12,14 @@ import GraphQLJSON from 'graphql-type-json';
 import { Environment } from '../enums/environment.enum';
 import { UserService } from '../../user/user.service';
 import { WsContextWithUser } from '../../../types/types';
+import { AuthService } from '../../auth/auth.service';
 
 @Injectable()
 export class GqlConfigService implements GqlOptionsFactory {
   constructor(
     private readonly config: ConfigService,
     private readonly userService: UserService,
+    private readonly authService: AuthService,
   ) {}
 
   createGqlOptions(): ApolloDriverConfig {
@@ -41,9 +43,9 @@ export class GqlConfigService implements GqlOptionsFactory {
           onConnect: async (ctx: WsContextWithUser) => {
             const { connectionParams, extra } = ctx;
             try {
-              const token =
-                connectionParams?.Authorization ||
-                connectionParams?.authorization;
+              const token = this.authService.getToken(
+                connectionParams?.authorization,
+              );
               const user = await this.userService.findOne({ where: { token } });
               extra.user = user;
             } catch {

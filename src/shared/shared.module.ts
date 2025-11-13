@@ -14,6 +14,7 @@ import { CityModule } from '../city/city.module';
 import { OverpassService } from './services/overpass.service';
 import { OpenrouteService } from './services/openroute.service';
 import { GeminiService } from './services/gemini.service';
+import { PubSub } from 'graphql-subscriptions';
 
 const modules = [
   HttpModule,
@@ -31,7 +32,14 @@ const guards = [RoleGuard];
 
 const interceptors = [UserContextInterceptor];
 
-const providers = [ShouldExistValidator, MatchPasswordValidator];
+const providers = [
+  {
+    provide: 'PUB_SUB',
+    useValue: new PubSub(),
+  },
+  ShouldExistValidator,
+  MatchPasswordValidator,
+];
 
 @Global()
 @Module({

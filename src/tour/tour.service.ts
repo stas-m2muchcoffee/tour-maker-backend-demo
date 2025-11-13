@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { map, keyBy, merge, filter } from 'lodash';
 import * as z from 'zod';
+import { PubSub } from 'graphql-subscriptions';
 
 import { BasicService } from '../shared/services/basic.service';
 import { Tour } from './models/tour.entity';
@@ -29,8 +30,30 @@ export class TourService extends BasicService<Tour> {
     private readonly overpassService: OverpassService,
     private readonly openrouteService: OpenrouteService,
     private readonly geminiService: GeminiService,
+    @Inject('PUB_SUB') private readonly tourPubSub: PubSub,
   ) {
     super(repository);
+  }
+
+  async createTourInBackground(input: CreateTourInput, user: User) {
+    try {
+      const tour = await this.createTour(input, user);
+
+      await this.tourPubSub.publish('tourCreated', {
+        userId: user.id,
+        tour,
+        error: null,
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Failed to create tour';
+
+      await this.tourPubSub.publish('tourCreated', {
+        userId: user.id,
+        tour: null,
+        error: message,
+      });
+    }
   }
 
   async createTour(input: CreateTourInput, user: User) {
@@ -71,7 +94,7 @@ export class TourService extends BasicService<Tour> {
       z.infer<typeof selectPoisResponseSchema>['pois'][number])[];
 
     if ((pois?.length || 0) < 3) {
-      throw new Error('Failed to generate tour route. Less than 53 stops');
+      throw new Error('Failed to generate tour route. Less than 3 stops');
     }
 
     const route = await this.openrouteService.getRouteGeoJson(

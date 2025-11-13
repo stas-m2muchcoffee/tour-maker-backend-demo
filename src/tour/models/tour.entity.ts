@@ -42,6 +42,10 @@ export class Tour extends BasicEntity {
   })
   readonly tourStops?: Relation<TourStop[]>;
 
+  @Field(() => [ID])
+  @RelationId('tourStops')
+  readonly tourStopIds: UUID[];
+
   @Field(() => City)
   @ManyToOne(() => City, { lazy: true })
   readonly city: Relation<City>;
