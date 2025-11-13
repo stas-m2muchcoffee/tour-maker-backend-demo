@@ -25,9 +25,6 @@ export const GEMINI_DATA = {
       **Route Constraints:**
       * **Total Walking Distance:** Must be strictly **less than 3000 meters**.
       * **Total Duration:** Must be strictly **less than 1.5 hours** (90 minutes) of *estimated walking time*.
-
-      **Output Requirement:**
-      Return a JSON object that strictly adheres to the provided schema. The 'pois' array must contain the 10 selected POIs in the calculated route order, with the original POI 'id' and name translated into English as 'nameEn'.
     `,
     responseSchema: z.object({
       pois: z
@@ -44,6 +41,25 @@ export const GEMINI_DATA = {
         .describe(
           'An array of the 10 selected POIs in the optimal route order.',
         ),
+    }),
+  },
+  generateTourTitleAndDescription: {
+    prompt: (
+      city: City,
+      categories: Category[],
+      pois: { id: string; lon: number; lat: number; name: string }[],
+    ) => `
+      You are the best tour guide in the world. Generate a title and description for a tour based on the following inputs:
+
+      **Inputs:**
+      1.  **city**: ${city.name}.
+      2.  **country**: ${city.countryName}.
+      3.  **poi_list**: A list of Point of Interest (POI) objects. ${JSON.stringify(pois)}.
+      4.  **categories**: ${join(map(categories, 'name'), ', ')}.
+    `,
+    responseSchema: z.object({
+      title: z.string().describe('The title of the tour.'),
+      description: z.string().describe('The description of the tour.'),
     }),
   },
 };

@@ -37,7 +37,7 @@ export class TourService extends BasicService<Tour> {
 
     const overpassPois = await this.overpassService.getPois(categories, city!);
 
-    const geminiPrompt = GEMINI_DATA.selectPois.prompt(
+    const selectPoisPrompt = GEMINI_DATA.selectPois.prompt(
       city!,
       categories,
       map(overpassPois, (poi) => ({
@@ -47,10 +47,10 @@ export class TourService extends BasicService<Tour> {
         name: poi.tags.name,
       })),
     );
-    const responseSchema = GEMINI_DATA.selectPois.responseSchema;
+    const selectPoisResponseSchema = GEMINI_DATA.selectPois.responseSchema;
     const geminiPois = await this.geminiService.generateContent<
-      z.infer<typeof responseSchema>
-    >(geminiPrompt, responseSchema, 'gemini-2.5-flash-lite');
+      z.infer<typeof selectPoisResponseSchema>
+    >(selectPoisPrompt, selectPoisResponseSchema, 'gemini-2.5-flash-lite');
 
     if (!geminiPois?.pois?.length) {
       throw new Error('Failed to generate tour route. No selected POIs by AI.');
@@ -63,7 +63,8 @@ export class TourService extends BasicService<Tour> {
         return poi ? merge({}, poi, geminiPoi) : null;
       }),
       Boolean,
-    ) as (OverpassPoi & { nameEn: string })[];
+    ) as (OverpassPoi &
+      z.infer<typeof selectPoisResponseSchema>['pois'][number])[];
 
     if ((pois?.length || 0) < 3) {
       throw new Error('Failed to generate tour route. Less than 53 stops');
@@ -74,13 +75,32 @@ export class TourService extends BasicService<Tour> {
       map(pois, (poi) => [poi.lon, poi.lat]),
     );
 
-    // TODO: use AI to generate tour title and description
+    const generateTourTitleAndDescriptionPrompt =
+      GEMINI_DATA.generateTourTitleAndDescription.prompt(
+        city!,
+        categories,
+        map(overpassPois, (poi) => ({
+          id: poi.id,
+          lon: poi.lon,
+          lat: poi.lat,
+          name: poi.tags.name,
+        })),
+      );
+    const generateTourTitleAndDescriptionResponseSchema =
+      GEMINI_DATA.generateTourTitleAndDescription.responseSchema;
+    const tourTitleAndDescription = await this.geminiService.generateContent<
+      z.infer<typeof generateTourTitleAndDescriptionResponseSchema>
+    >(
+      generateTourTitleAndDescriptionPrompt,
+      generateTourTitleAndDescriptionResponseSchema,
+    );
+
     return this.create({
       city: city!,
       categories,
       user,
-      title: 'Your tour',
-      description: 'Your tour description',
+      title: tourTitleAndDescription.title,
+      description: tourTitleAndDescription.description,
       route,
       tourStops: map(pois, (poi) => ({
         name: poi.nameEn,
