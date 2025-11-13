@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
-import { join, map, pick, uniqBy } from 'lodash';
+import { join, map, uniqBy } from 'lodash';
 
 import { OverpassPoi } from '../../../types/types';
 import { Category } from '../../category/models/category.entity';
@@ -39,12 +39,7 @@ export class OverpassService {
       throw new Error("Can't find POIs in primary Overpass API");
     }
 
-    const overpassPois = uniqBy<OverpassPoi>(response.data?.elements, 'id');
-    const clearedOverpassPois = map(
-      overpassPois,
-      (poi) => pick(poi, ['id', 'lon', 'lat', 'tags.name']) as OverpassPoi,
-    );
-    return clearedOverpassPois;
+    return uniqBy<OverpassPoi>(response.data?.elements, 'id');
   }
 
   private buildQueryToGetPois(
