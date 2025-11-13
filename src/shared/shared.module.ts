@@ -13,6 +13,7 @@ import { TourStopModule } from '../tour-stop/tour-stop.module';
 import { CityModule } from '../city/city.module';
 import { OverpassService } from './services/overpass.service';
 import { OpenrouteService } from './services/openroute.service';
+import { GeminiService } from './services/gemini.service';
 
 const modules = [
   HttpModule,
@@ -24,7 +25,7 @@ const modules = [
   TourStopModule,
 ];
 
-const services = [OverpassService, OpenrouteService];
+const services = [OverpassService, OpenrouteService, GeminiService];
 
 const guards = [RoleGuard];
 

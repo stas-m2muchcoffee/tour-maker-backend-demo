@@ -17,6 +17,7 @@ const PARAMS = {
   POSTGRES_PASSWORD: Joi.string(),
 
   OPENROUTE_SERVICE_API_KEY: Joi.string().required(),
+  GEMINI_API_KEY: Joi.string().required(),
 };
 
 export const configSchema = Joi.object<typeof PARAMS>(PARAMS);
