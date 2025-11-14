@@ -30,13 +30,14 @@ export class OverpassService {
         .pipe(
           catchError((e) => {
             console.error(e);
-            throw new Error('Overpass API error');
+            throw new Error('Overpass API error. Please try again later.');
           }),
         ),
     );
 
     if (!response.data?.elements?.length) {
-      throw new Error("Can't find POIs in primary Overpass API");
+      console.error('No POIs found in Overpass API.');
+      throw new Error("Can't find POIs in Overpass API.");
     }
 
     return uniqBy<OverpassPoi>(response.data?.elements, 'id');

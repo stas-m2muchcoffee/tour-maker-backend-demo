@@ -127,7 +127,9 @@ export class TourService extends BasicService<Tour> {
       z.infer<typeof selectPoisResponseSchema>['pois'][number])[];
 
     if ((pois?.length || 0) < 3) {
-      throw new Error('Failed to generate tour route. Less than 3 stops');
+      throw new Error(
+        'Failed to generate tour route. Less than 3 stops found.',
+      );
     }
 
     const route = await this.openrouteService.getRouteGeoJson(

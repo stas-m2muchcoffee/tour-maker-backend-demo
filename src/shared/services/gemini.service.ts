@@ -34,7 +34,7 @@ export class GeminiService {
       return responseSchema.parse(JSON.parse(response.text!)) as T;
     } catch (error) {
       console.error(error);
-      throw new Error('Gemini API error');
+      throw new Error('Gemini API error. Please try again later.');
     }
   }
 }

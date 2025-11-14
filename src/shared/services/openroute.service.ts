@@ -36,7 +36,7 @@ export class OpenrouteService {
         .pipe(
           catchError((e) => {
             console.error(e);
-            throw new Error('Openroute API error');
+            throw new Error('Openroute API error. Please try again later.');
           }),
         ),
     );
