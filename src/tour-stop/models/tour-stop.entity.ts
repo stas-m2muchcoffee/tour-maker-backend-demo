@@ -19,10 +19,6 @@ export class TourStop extends BasicEntity {
   @Column({ type: 'json' })
   readonly location: Location;
 
-  @Field({ nullable: true })
-  @Column({ type: 'text', nullable: true })
-  readonly description?: string;
-
   @ManyToOne(() => Tour, (tour) => tour.tourStops, {
     onDelete: 'CASCADE',
   })

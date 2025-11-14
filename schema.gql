@@ -124,7 +124,6 @@ type TourQuery {
 
 """Tour Stop"""
 type TourStop {
-  description: String
   id: ID!
   location: Location!
   name: String!
