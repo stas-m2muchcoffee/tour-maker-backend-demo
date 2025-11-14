@@ -5,6 +5,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ClsModule } from 'nestjs-cls';
 import { JwtModule } from '@nestjs/jwt';
+import { CacheModule } from '@nestjs/cache-manager';
 
 import { configSchema } from './config.schema';
 import { SharedModule } from './shared/shared.module';
@@ -27,6 +28,9 @@ import { JwtConfigService } from './shared/services/jwt-config.service';
     TypeOrmModule.forRoot({
       ...dataSourceOptions,
       migrations: [],
+    }),
+    CacheModule.register({
+      isGlobal: true,
     }),
     JwtModule.registerAsync({
       global: true,

@@ -21,7 +21,11 @@ export class TourMutationResolver {
       'Start a new tour creation process. Returns true once the job is started.',
   })
   @Roles()
-  createTour(@Args('input') input: CreateTourInput, @ActiveUser() user: User) {
+  async createTour(
+    @Args('input') input: CreateTourInput,
+    @ActiveUser() user: User,
+  ) {
+    await this.tourService.validateNoTourInProgress(user);
     void this.tourService.createTourInBackground(input, user);
     return true;
   }

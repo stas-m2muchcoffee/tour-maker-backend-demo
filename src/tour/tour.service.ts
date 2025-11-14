@@ -1,9 +1,11 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { map, keyBy, merge, filter } from 'lodash';
 import * as z from 'zod';
 import { PubSub } from 'graphql-subscriptions';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import type { Cache } from 'cache-manager';
 
 import { BasicService } from '../shared/services/basic.service';
 import { Tour } from './models/tour.entity';
@@ -23,6 +25,8 @@ import { getPagingQuery } from '../shared/utils/get-paging-query';
 
 @Injectable()
 export class TourService extends BasicService<Tour> {
+  private readonly TOUR_CREATION_CACHE_KEY_PREFIX = 'tour_creation:';
+
   constructor(
     @InjectRepository(Tour) protected repository: Repository<Tour>,
     private readonly cityService: CityService,
@@ -31,13 +35,37 @@ export class TourService extends BasicService<Tour> {
     private readonly openrouteService: OpenrouteService,
     private readonly geminiService: GeminiService,
     @Inject('PUB_SUB') private readonly tourPubSub: PubSub,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {
     super(repository);
   }
 
+  async validateNoTourInProgress(user: User) {
+    const cacheKey = `${this.TOUR_CREATION_CACHE_KEY_PREFIX}${user.id}`;
+    const isCreating = await this.cacheManager.get<boolean>(cacheKey);
+
+    if (isCreating) {
+      throw new BadRequestException(
+        'You already have a tour creation in progress. Please wait for it to complete before creating a new tour.',
+      );
+    }
+  }
+
   async createTourInBackground(input: CreateTourInput, user: User) {
     try {
+      // Mark user as creating a tour
+      await this.cacheManager.set(
+        `${this.TOUR_CREATION_CACHE_KEY_PREFIX}${user.id}`,
+        true,
+        0,
+      );
+
       const tour = await this.createTour(input, user);
+
+      // Clear cache on success
+      await this.cacheManager.del(
+        `${this.TOUR_CREATION_CACHE_KEY_PREFIX}${user.id}`,
+      );
 
       await this.tourPubSub.publish('tourCreated', {
         userId: user.id,
@@ -45,6 +73,11 @@ export class TourService extends BasicService<Tour> {
         error: null,
       });
     } catch (error) {
+      // Clear cache on error
+      await this.cacheManager.del(
+        `${this.TOUR_CREATION_CACHE_KEY_PREFIX}${user.id}`,
+      );
+
       const message =
         error instanceof Error ? error.message : 'Failed to create tour';
 
