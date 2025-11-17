@@ -2,17 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { hashSync } from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
+import { join } from 'lodash';
 
 import { UserService } from '../user/user.service';
 import { User } from '../user/models/user.entity';
 import { SignUpInput } from './dto/sign-up.input';
 import { SignInInput } from './dto/sign-in.input';
+import { EmbeddingService } from '../shared/services/embedding.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
+    private readonly embeddingService: EmbeddingService,
   ) {}
 
   getToken(authHeader?: string) {
@@ -38,14 +41,20 @@ export class AuthService {
     }
   }
 
-  signUp(input: SignUpInput) {
-    const { password, ...rest } = input;
+  async signUp(input: SignUpInput) {
+    const { password, preferences, ...rest } = input;
     const hashedPassword = hashSync(password, 12);
     const token = this.signToken();
+    const embedding = await this.embeddingService.createEmbedding(
+      join(preferences, ', '),
+    );
+
     return this.userService.create({
       ...rest,
+      preferences,
       password: hashedPassword,
       token,
+      embedding,
     });
   }
 

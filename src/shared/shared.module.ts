@@ -1,5 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
+import { PubSub } from 'graphql-subscriptions';
 
 import { UserModule } from '../user/user.module';
 import { RoleGuard } from './guards/role.guard';
@@ -14,7 +15,7 @@ import { CityModule } from '../city/city.module';
 import { OverpassService } from './services/overpass.service';
 import { OpenrouteService } from './services/openroute.service';
 import { GeminiService } from './services/gemini.service';
-import { PubSub } from 'graphql-subscriptions';
+import { EmbeddingService } from './services/embedding.service';
 
 const modules = [
   HttpModule,
@@ -26,7 +27,12 @@ const modules = [
   TourStopModule,
 ];
 
-const services = [OverpassService, OpenrouteService, GeminiService];
+const services = [
+  OverpassService,
+  OpenrouteService,
+  GeminiService,
+  EmbeddingService,
+];
 
 const guards = [RoleGuard];
 
