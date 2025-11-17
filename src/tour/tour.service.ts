@@ -1,11 +1,12 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-import { map, keyBy, merge, filter } from 'lodash';
+import { map, keyBy, merge, filter, join } from 'lodash';
 import * as z from 'zod';
 import { PubSub } from 'graphql-subscriptions';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
+import * as pgvector from 'pgvector';
 
 import { BasicService } from '../shared/services/basic.service';
 import { Tour } from './models/tour.entity';
@@ -159,11 +160,16 @@ export class TourService extends BasicService<Tour> {
       generateTourTitleAndDescriptionResponseSchema,
     );
 
-    const embedding = await this.embeddingService.createEmbedding([
-      tourTitleAndDescription.title,
-      tourTitleAndDescription.description,
-      ...map(categories, 'name'),
-    ]);
+    const embedding = await this.embeddingService.createEmbedding(
+      join(
+        [
+          tourTitleAndDescription.title,
+          tourTitleAndDescription.description,
+          ...map(categories, 'name'),
+        ],
+        '. ',
+      ),
+    );
 
     return this.create({
       city: city!,
@@ -199,5 +205,22 @@ export class TourService extends BasicService<Tour> {
 
   getTour(input: GetTourInput) {
     return this.findOneBy(input);
+  }
+
+  async getRecommendedTours(user: User) {
+    if (!user?.embedding) {
+      return [];
+    }
+
+    return this.repository
+      .createQueryBuilder('tour')
+      .where('tour.embedding IS NOT NULL')
+      .andWhere('tour.userId != :userId', { userId: user.id })
+      .orderBy('tour.embedding <=> :userEmbedding', 'ASC')
+      .setParameters({
+        userEmbedding: pgvector.toSql(Array.from(user.embedding)) as string,
+      })
+      .take(3)
+      .getMany();
   }
 }

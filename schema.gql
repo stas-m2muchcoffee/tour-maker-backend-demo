@@ -116,6 +116,9 @@ type TourPagingResult {
 }
 
 type TourQuery {
+  """Get recommended tours for the current user"""
+  getRecommendedTours: [Tour!]!
+
   """Get a tour by id for the current user"""
   getTour(input: GetTourInput!): Tour!
 

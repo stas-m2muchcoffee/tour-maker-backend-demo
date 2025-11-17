@@ -7,6 +7,8 @@ import { GetTourInput } from './dto/get-tour.input';
 import { GetToursFilterInput } from './dto/get-tours-filter.input';
 import { PagingInput } from '../shared/inputs/paging.input';
 import { TourPagingResult } from './models/tour-paging-result';
+import { User } from '../user/models/user.entity';
+import { ActiveUser } from '../shared/decorators/active-user.decorator';
 
 @Resolver(() => TourQuery)
 export class TourQueryResolver {
@@ -34,5 +36,13 @@ export class TourQueryResolver {
   @Roles()
   getTour(@Args('input') input: GetTourInput) {
     return this.tourService.getTour(input);
+  }
+
+  @ResolveField(() => [Tour], {
+    description: 'Get recommended tours for the current user',
+  })
+  @Roles()
+  getRecommendedTours(@ActiveUser() user: User) {
+    return this.tourService.getRecommendedTours(user);
   }
 }
