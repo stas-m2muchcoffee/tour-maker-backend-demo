@@ -73,6 +73,7 @@ input SignInInput {
 input SignUpInput {
   email: String!
   password: String!
+  preferences: [String!]!
 }
 
 type Subscription {
@@ -134,6 +135,7 @@ type TourStop {
 type User {
   email: String!
   id: ID!
+  preferences: [String!]
   role: UserRole!
   token: String
 }

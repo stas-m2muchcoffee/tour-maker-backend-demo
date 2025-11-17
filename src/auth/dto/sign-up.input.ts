@@ -1,5 +1,7 @@
 import { Field, InputType } from '@nestjs/graphql';
 import {
+  ArrayMinSize,
+  IsArray,
   IsEmail,
   IsNotEmpty,
   IsString,
@@ -35,4 +37,11 @@ export class SignUpInput {
   @IsString()
   @MinLength(8)
   password: string;
+
+  @Field(() => [String])
+  @IsNotEmpty()
+  @IsArray()
+  @ArrayMinSize(1)
+  @IsString({ each: true })
+  preferences: string[];
 }

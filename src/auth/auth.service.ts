@@ -39,11 +39,12 @@ export class AuthService {
   }
 
   signUp(input: SignUpInput) {
-    const password = hashSync(input.password, 12);
+    const { password, ...rest } = input;
+    const hashedPassword = hashSync(password, 12);
     const token = this.signToken();
     return this.userService.create({
-      email: input.email,
-      password,
+      ...rest,
+      password: hashedPassword,
       token,
     });
   }

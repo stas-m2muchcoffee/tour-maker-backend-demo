@@ -27,4 +27,17 @@ export class User extends BasicEntity {
   @Field(() => String, { nullable: true })
   @Column({ type: 'varchar', nullable: true })
   token: string | null;
+
+  @Field(() => [String], { nullable: true })
+  @Column('text', {
+    array: true,
+    nullable: true,
+  })
+  preferences?: string[];
+
+  @Column({
+    type: 'vector',
+    nullable: true,
+  })
+  embedding?: string;
 }
