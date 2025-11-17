@@ -22,6 +22,7 @@ import { GetTourInput } from './dto/get-tour.input';
 import { GetToursFilterInput } from './dto/get-tours-filter.input';
 import { PagingInput } from '../shared/inputs/paging.input';
 import { getPagingQuery } from '../shared/utils/get-paging-query';
+import { EmbeddingService } from '../shared/services/embedding.service';
 
 @Injectable()
 export class TourService extends BasicService<Tour> {
@@ -33,6 +34,7 @@ export class TourService extends BasicService<Tour> {
     private readonly categoryService: CategoryService,
     private readonly overpassService: OverpassService,
     private readonly openrouteService: OpenrouteService,
+    private readonly embeddingService: EmbeddingService,
     private readonly geminiService: GeminiService,
     @Inject('PUB_SUB') private readonly tourPubSub: PubSub,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
@@ -157,6 +159,12 @@ export class TourService extends BasicService<Tour> {
       generateTourTitleAndDescriptionResponseSchema,
     );
 
+    const embedding = await this.embeddingService.createEmbedding([
+      tourTitleAndDescription.title,
+      tourTitleAndDescription.description,
+      ...map(categories, 'name'),
+    ]);
+
     return this.create({
       city: city!,
       categories,
@@ -164,6 +172,7 @@ export class TourService extends BasicService<Tour> {
       title: tourTitleAndDescription.title,
       description: tourTitleAndDescription.description,
       route,
+      embedding,
       tourStops: map(pois, (poi) => ({
         name: poi.nameEn,
         location: {

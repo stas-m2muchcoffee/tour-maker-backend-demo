@@ -35,6 +35,9 @@ export class Tour extends BasicEntity {
   @Column({ type: 'json' })
   readonly route: Record<string, any>;
 
+  @Column({ type: 'vector', nullable: true })
+  readonly embedding?: string;
+
   @Field(() => [TourStop], { nullable: true })
   @OneToMany(() => TourStop, (tourStop) => tourStop.tour, {
     cascade: true,
