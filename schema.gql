@@ -53,6 +53,7 @@ type Location {
 type Mutation {
   auth: AuthMutation!
   tour: TourMutation!
+  user: UserMutation!
 }
 
 input PagingInput {
@@ -134,6 +135,10 @@ type TourStop {
   tourId: ID!
 }
 
+input UpdateUserPreferencesInput {
+  preferences: [String!]!
+}
+
 """User"""
 type User {
   email: String!
@@ -141,6 +146,11 @@ type User {
   preferences: [String!]
   role: UserRole!
   token: String
+}
+
+type UserMutation {
+  """Update preferences for the current user"""
+  updateMyPreferences(input: UpdateUserPreferencesInput!): User!
 }
 
 type UserQuery {
