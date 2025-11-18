@@ -162,12 +162,8 @@ export class TourService extends BasicService<Tour> {
 
     const embedding = await this.embeddingService.createEmbedding(
       join(
-        [
-          tourTitleAndDescription.title,
-          tourTitleAndDescription.description,
-          ...map(categories, 'name'),
-        ],
-        '. ',
+        [tourTitleAndDescription.title, city!.name, ...map(categories, 'name')],
+        ', ',
       ),
     );
 
@@ -217,8 +213,10 @@ export class TourService extends BasicService<Tour> {
       .where('tour.embedding IS NOT NULL')
       .andWhere('tour.userId != :userId', { userId: user.id })
       .orderBy('tour.embedding <=> :userEmbedding', 'ASC')
+      .andWhere('1 - (tour.embedding <=> :userEmbedding) > :minQualityScore')
       .setParameters({
         userEmbedding: pgvector.toSql(Array.from(user.embedding)) as string,
+        minQualityScore: 0.3,
       })
       .take(3)
       .getMany();

@@ -51,7 +51,7 @@ export class Tour extends BasicEntity {
 
   @Field(() => City)
   @ManyToOne(() => City, { lazy: true })
-  readonly city: Relation<City>;
+  readonly city: Relation<City | Promise<City>>;
 
   @Field(() => ID)
   @RelationId('city')
@@ -60,14 +60,14 @@ export class Tour extends BasicEntity {
   @Field(() => [Category])
   @ManyToMany(() => Category, { lazy: true })
   @JoinTable()
-  readonly categories: Relation<Category[]>;
+  readonly categories: Relation<Category[] | Promise<Category[]>>;
 
   @Field(() => [ID])
   @RelationId('categories')
   readonly categoryIds: UUID[];
 
   @ManyToOne(() => User, { lazy: true, onDelete: 'CASCADE' })
-  readonly user: Relation<User>;
+  readonly user: Relation<User | Promise<User>>;
 
   @Field(() => ID)
   @RelationId('user')

@@ -39,7 +39,12 @@ export class TourQueryResolver {
   }
 
   @ResolveField(() => [Tour], {
-    description: 'Get recommended tours for the current user',
+    description: `
+      Get recommended tours (created by other users) for the current user.
+      The tours are sorted by the similarity of the user's embedding to the tour's embedding.
+      The similarity is calculated using the cosine similarity between the user's embedding and the tour's embedding
+      and filtered by a minimum quality score.
+    `,
   })
   @Roles()
   getRecommendedTours(@ActiveUser() user: User) {
