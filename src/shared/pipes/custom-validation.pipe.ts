@@ -1,6 +1,7 @@
 import {
   ArgumentMetadata,
   PipeTransform,
+  Type,
   ValidationPipe,
   ValidationPipeOptions,
 } from '@nestjs/common';
@@ -13,7 +14,7 @@ export class CustomValidationPipe implements PipeTransform {
   transform(value: unknown, metadata: ArgumentMetadata): unknown {
     const { metatype } = metadata;
 
-    if (!metatype || metatype === Promise || metatype.name === 'Promise') {
+    if (!metatype || !this.toValidate(metatype)) {
       return value;
     }
 
@@ -32,5 +33,17 @@ export class CustomValidationPipe implements PipeTransform {
     });
 
     return validationPipe.transform(value, metadata);
+  }
+
+  private toValidate(metatype: Type<unknown>): boolean {
+    const types: Type<unknown>[] = [
+      String,
+      Boolean,
+      Number,
+      Array,
+      Object,
+      Promise,
+    ];
+    return !(types.includes(metatype) || metatype.name === 'Promise');
   }
 }

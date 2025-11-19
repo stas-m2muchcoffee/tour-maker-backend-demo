@@ -1,4 +1,10 @@
-import { Args, Mutation, ResolveField, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Context,
+  Mutation,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 
 import { AuthService } from './auth.service';
 import { AuthMutation } from './models/auth.mutation.model';
@@ -7,6 +13,7 @@ import { SignInInput } from './dto/sign-in.input';
 import { User } from '../user/models/user.entity';
 import { ActiveUser } from '../shared/decorators/active-user.decorator';
 import { Roles } from '../shared/decorators/roles.decorator';
+import type { RequestWithUser } from '../../types/types';
 
 @Resolver(() => AuthMutation)
 export class AuthMutationResolver {
@@ -20,15 +27,25 @@ export class AuthMutationResolver {
   @ResolveField(() => User, {
     description: 'Registers a new user',
   })
-  signUp(@Args('input') input: SignUpInput) {
-    return this.authService.signUp(input);
+  async signUp(
+    @Args('input') input: SignUpInput,
+    @Context('req') req: RequestWithUser,
+  ) {
+    const user = await this.authService.signUp(input);
+    req.user = user;
+    return user;
   }
 
   @ResolveField(() => User, {
     description: 'Authenticates an existing user',
   })
-  signIn(@Args('input') input: SignInInput) {
-    return this.authService.signIn(input);
+  async signIn(
+    @Args('input') input: SignInInput,
+    @Context('req') req: RequestWithUser,
+  ) {
+    const user = await this.authService.signIn(input);
+    req.user = user;
+    return user;
   }
 
   @ResolveField(() => Boolean, {
