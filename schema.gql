@@ -19,11 +19,21 @@ type Category {
   name: String!
 }
 
+type CategoryQuery {
+  """Get all categories"""
+  getCategories: [Category!]!
+}
+
 """City"""
 type City {
   countryName: String!
   id: ID!
   name: String!
+}
+
+type CityQuery {
+  """Get all cities"""
+  getCities: [City!]!
 }
 
 input CreateTourInput {
@@ -62,6 +72,8 @@ input PagingInput {
 }
 
 type Query {
+  category: CategoryQuery!
+  city: CityQuery!
   tour: TourQuery!
   user: UserQuery!
 }
