@@ -32,4 +32,7 @@ export class BasicService<Entity extends ObjectLiteral> {
   update(...args: Parameters<Repository<Entity>['update']>) {
     return this.repository.update(...args);
   }
+  count(...args: Parameters<Repository<Entity>['count']>) {
+    return this.repository.count(...args);
+  }
 }

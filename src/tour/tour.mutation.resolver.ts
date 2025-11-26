@@ -25,7 +25,12 @@ export class TourMutationResolver {
     @Args('input') input: CreateTourInput,
     @ActiveUser() user: User,
   ) {
-    await this.tourService.validateNoTourInProgress(user);
+    await Promise.all([
+      this.tourService.validateNoTourInProgress(user),
+      this.tourService.validateLimitOfToursPerDay(3, user),
+      this.tourService.validateLimitOfToursPerDay(20),
+    ]);
+
     void this.tourService.createTourInBackground(input, user);
     return true;
   }

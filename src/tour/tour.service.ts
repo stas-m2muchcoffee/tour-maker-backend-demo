@@ -1,6 +1,6 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { In, MoreThan, Repository } from 'typeorm';
 import { map, keyBy, merge, filter, join } from 'lodash';
 import * as z from 'zod';
 import { PubSub } from 'graphql-subscriptions';
@@ -50,6 +50,24 @@ export class TourService extends BasicService<Tour> {
     if (isCreating) {
       throw new BadRequestException(
         'You already have a tour creation in progress. Please wait for it to complete before creating a new tour.',
+      );
+    }
+  }
+
+  async validateLimitOfToursPerDay(limit: number, user?: User) {
+    const date = new Date();
+    date.setUTCHours(0, 0, 0, 0);
+
+    const numberOfTours = await this.count({
+      where: {
+        ...(user ? { user: { id: user.id } } : {}),
+        createdAt: MoreThan(date),
+      },
+    });
+
+    if (numberOfTours >= limit) {
+      throw new BadRequestException(
+        'Limit of tours creation per day reached. Please try again tomorrow.',
       );
     }
   }
