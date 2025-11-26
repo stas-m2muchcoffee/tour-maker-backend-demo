@@ -129,6 +129,9 @@ type TourPagingResult {
 }
 
 type TourQuery {
+  """Check if the current user has a tour creation in progress"""
+  checkIfTourCreationInProgress: Boolean!
+
   "\n      Get recommended tours (created by other users) for the current user.\n      The tours are sorted by the similarity of the user's embedding to the tour's embedding.\n      The similarity is calculated using the cosine similarity between the user's embedding and the tour's embedding\n      and filtered by a minimum quality score.\n    "
   getRecommendedTours: [Tour!]!
 

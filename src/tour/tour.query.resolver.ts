@@ -50,4 +50,12 @@ export class TourQueryResolver {
   getRecommendedTours(@ActiveUser() user: User) {
     return this.tourService.getRecommendedTours(user);
   }
+
+  @ResolveField(() => Boolean, {
+    description: 'Check if the current user has a tour creation in progress',
+  })
+  @Roles()
+  checkIfTourCreationInProgress(@ActiveUser() user: User) {
+    return this.tourService.checkIfTourCreationInProgress(user);
+  }
 }

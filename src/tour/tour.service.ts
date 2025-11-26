@@ -54,6 +54,12 @@ export class TourService extends BasicService<Tour> {
     }
   }
 
+  async checkIfTourCreationInProgress(user: User) {
+    const cacheKey = `${this.TOUR_CREATION_CACHE_KEY_PREFIX}${user.id}`;
+    const isCreating = await this.cacheManager.get<boolean>(cacheKey);
+    return !!isCreating;
+  }
+
   async validateLimitOfToursPerDay(limit: number, user?: User) {
     const date = new Date();
     date.setUTCHours(0, 0, 0, 0);
