@@ -6,6 +6,7 @@ dotenv.config();
 import { DataSourceOptions } from 'typeorm/data-source/DataSourceOptions';
 
 const {
+  POSTGRES_URL,
   POSTGRES_PORT,
   POSTGRES_HOST,
   POSTGRES_DB,
@@ -13,12 +14,20 @@ const {
   POSTGRES_PASSWORD,
 } = process.env;
 
+const connectionOptions = POSTGRES_URL
+  ? {
+      url: POSTGRES_URL,
+    }
+  : {
+      port: parseInt(POSTGRES_PORT!),
+      host: POSTGRES_HOST,
+      database: POSTGRES_DB,
+      username: POSTGRES_USER,
+      password: POSTGRES_PASSWORD,
+    };
+
 export const dataSourceOptions: DataSourceOptions = {
-  port: parseInt(POSTGRES_PORT!),
-  host: POSTGRES_HOST,
-  database: POSTGRES_DB,
-  username: POSTGRES_USER,
-  password: POSTGRES_PASSWORD,
+  ...connectionOptions,
   type: 'postgres',
   name: 'default',
   synchronize: false,

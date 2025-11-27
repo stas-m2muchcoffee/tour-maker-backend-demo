@@ -10,9 +10,22 @@ const PARAMS = {
   JWT_SECRET_KEY: Joi.string().required(),
 
   // database
-  POSTGRES_HOST: Joi.string().required(),
-  POSTGRES_PORT: Joi.number().required(),
-  POSTGRES_DB: Joi.string().required(),
+  POSTGRES_URL: Joi.string().optional(),
+  POSTGRES_HOST: Joi.alternatives().conditional('POSTGRES_URL', {
+    is: Joi.exist(),
+    then: Joi.optional(),
+    otherwise: Joi.string().required(),
+  }),
+  POSTGRES_PORT: Joi.alternatives().conditional('POSTGRES_URL', {
+    is: Joi.exist(),
+    then: Joi.optional(),
+    otherwise: Joi.string().required(),
+  }),
+  POSTGRES_DB: Joi.alternatives().conditional('POSTGRES_URL', {
+    is: Joi.exist(),
+    then: Joi.optional(),
+    otherwise: Joi.string().required(),
+  }),
   POSTGRES_USER: Joi.string(),
   POSTGRES_PASSWORD: Joi.string(),
 
